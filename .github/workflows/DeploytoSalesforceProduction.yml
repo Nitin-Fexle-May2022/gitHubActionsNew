@@ -27,7 +27,7 @@ jobs:
           SFDX_PASSWORD: ${{ secrets.SFDX_PASSWORD }}
    
         run: |
-            sfdx sfpowerkit:auth:login -u sendgrid@fexle.com.dev -p 786786@ab  [-s Esc2hKTZbirGeN3glvIRs3Jpw] [ -r login.salesforce.com ]  [-a DevHub]
+            sfpowerkit:auth:login -u sendgrid@fexle.com.dev -p 786786@ab  [-s Esc2hKTZbirGeN3glvIRs3Jpw] [ -r login.salesforce.com ]  [-a DevHub]
             #sfdx sfpowerkit:auth:login --instanceurl https://login.salesforce.com --username SFDX_USERNAME --password SFDX_PASSWORD --setalias $ALIAS
             #sfdx auth:sfdxurl:store -f  -a HubOrg
             #sfdx force:auth:login --username ${{ secrets.SFDX_USERNAME }} --password ${{ secrets.SFDX_PASSWORD }} --setalias DevHub
