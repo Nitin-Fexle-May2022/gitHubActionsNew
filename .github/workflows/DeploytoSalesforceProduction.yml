@@ -27,10 +27,11 @@ jobs:
           SFDX_CLIENT_ID: ${{ secrets.SFDX_CLIENT_ID }}
         run: |
           echo "${SFDX_JWT_KEY}" > server.key
-          
-          npx sfdx force:auth:jwt:grant -i "${SFDX_CLIENT_ID}" -f server.key -o nitin.rajput@fexle.com.training.staging
+          openssl rsa -in server.key -outform RSA -out server_rsa.key
+ 
+          npx sfdx force:auth:jwt:grant -i "${SFDX_CLIENT_ID}" -f server_rsa.key -o nitin.rajput@fexle.com.training.staging
           npx sfdx force:org:display --json -u nitin.rajput@fexle.com.training.staging > sfdx-auth.json
-          rm jwt.key
+          rm server_rsa.key
 
       - name: Build, Test & Deploy
         uses: gfarb/sfdx-deploy@v1
