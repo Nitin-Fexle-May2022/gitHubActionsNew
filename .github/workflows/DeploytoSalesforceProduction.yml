@@ -15,6 +15,11 @@ jobs:
         with:
           node-version: "16.x"
 
+      - name: Install Dependencies
+        run: |
+          npm install -g sfdx-cli
+          npm install gfarb/sfdx-deploy@v1
+
       - name: SFDX Auth
         env:
           SFDX_JWT_KEY: ${{ secrets.SFDX_JWT_KEY }}
