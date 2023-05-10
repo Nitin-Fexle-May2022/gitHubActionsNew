@@ -1,1 +1,28 @@
+name: Salesforce Deployment Workflow
+on:
+  push:
+    branches:
+      - actions
 
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+      - name: Install Salesforce CLI
+        run: |
+          curl https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz | tar xJf -
+          ./sfdx/install
+        env:
+          SFDX_AUTOUPDATE_DISABLE: true
+      - name: Authenticate with Salesforce Org
+        run: |
+          echo ${{ secrets.SFDC_USERNAME }} > ./username.txt
+          echo ${{ secrets.SFDC_PASSWORD }} > ./password.txt
+          sfdx force:auth:jwt:grant --clientid ${{ secrets.SFDC_CONSUMER_KEY }} --jwtkeyfile ./server.key --username $(cat ./username.txt) --password $(cat ./password.txt) --instanceurl ${{ secrets.SFDC_INSTANCE_URL }}
+      - name: Deploy metadata changes to Salesforce
+        run: |
+          sfdx force:source:convert -r ./path/to/source/dir -d ./path/to/output/dir
+          sfdx force:mdapi:deploy -d ./path/to/output/dir -u ${{ secrets.SFDC_USERNAME }} --wait -1
