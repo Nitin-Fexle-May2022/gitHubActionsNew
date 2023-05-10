@@ -1,28 +1,49 @@
-name: Salesforce Deployment Workflow
 on:
   push:
     branches:
-      - actions
-
+      - "master"
+name: Deploy to Salesforce Production
 jobs:
-  deployment:
+  deploy:
     runs-on: ubuntu-latest
-    environment: production
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v2
-      - name: Install Salesforce CLI
-        run: |
-          curl https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz | tar xJf -
-          ./sfdx/install
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "14"
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        id: npm_cache_id
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-cache-
+            ${{ runner.os }}-
+
+      - name: Install Dependencies
+        if: steps.npm_cache_id.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: SFDX Auth
         env:
-          SFDX_AUTOUPDATE_DISABLE: true
-      - name: Authenticate with Salesforce Org
+          SFDX_JWT_KEY: ${{ secrets.SFDX_JWT_KEY }}
+          SFDX_CLIENT_ID: ${{ secrets.SFDX_CLIENT_ID }}
         run: |
-          echo ${{ secrets.SFDC_USERNAME }} > ./username.txt
-          echo ${{ secrets.SFDC_PASSWORD }} > ./password.txt
-          sfdx force:auth:jwt:grant --clientid ${{ secrets.SFDC_CONSUMER_KEY }} --jwtkeyfile ./server.key --username $(cat ./username.txt) --password $(cat ./password.txt) --instanceurl ${{ secrets.SFDC_INSTANCE_URL }}
-      - name: Deploy metadata changes to Salesforce
-        run: |
-          sfdx force:source:convert -r ./path/to/source/dir -d ./path/to/output/dir
-          sfdx force:mdapi:deploy -d ./path/to/output/dir -u ${{ secrets.SFDC_USERNAME }} --wait -1
+          echo "${SFDX_JWT_KEY}" > server.key
+          npx sfdx force:auth:jwt:grant --clientid "${SFDX_CLIENT_ID}" --jwtkeyfile server.key --username gfarb@github.dreamforce --setdefaultdevhubusername
+          npx sfdx force:org:display --json -u gfarb@github.dreamforce > sfdx-auth.json
+          rm server.key
+
+      - name: Build, Test & Deploy
+        uses: gfarb/sfdx-deploy@v1
+        env:
+          TARGET_USERNAME: gfarb@github.dreamforce
+          SOURCE_PATH: force-app
+          DESTRUCTIVE_CHANGES: destructive-changes
+          TEST_LEVEL: RunLocalTests
+          WAIT: 200
