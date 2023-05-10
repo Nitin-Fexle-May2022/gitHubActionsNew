@@ -26,7 +26,7 @@ jobs:
           SFDX_PASSWORD: ${{ secrets.SFDX_PASSWORD }}
    
         run: |
-            sfdx auth:login --username ${{ secrets.SFDX_USERNAME }} --password ${{ secrets.SFDX_PASSWORD }} --setalias DevHub
+            sfdx force:auth:login --username ${{ secrets.SFDX_USERNAME }} --password ${{ secrets.SFDX_PASSWORD }} --setalias DevHub
             sfdx force:org:display --json -u DevHub > sfdx-auth.json
 
       - name: Build, Test & Deploy
