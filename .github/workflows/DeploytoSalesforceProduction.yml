@@ -15,20 +15,6 @@ jobs:
         with:
           node-version: "16.x"
 
-      - name: Cache node modules
-        uses: actions/cache@v3
-        id: npm_cache_id
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-cache-
-            ${{ runner.os }}-
-
-      - name: Install Dependencies
-        if: steps.npm_cache_id.outputs.cache-hit != 'true'
-        run: npm ci
-
       - name: SFDX Auth
         env:
           SFDX_JWT_KEY: ${{ secrets.SFDX_JWT_KEY }}
