@@ -24,7 +24,8 @@ jobs:
         env:
           SFDX_JWT_KEY: ${{ secrets.SFDX_JWT_KEY }}
           SFDX_CLIENT_ID: ${{ secrets.SFDX_CLIENT_ID }}
-          
+        
+        
         run: |
           echo "${SFDX_JWT_KEY}" | openssl rsa -inform pem -outform pem -out server.key
           
