@@ -21,14 +21,14 @@ jobs:
           SFDX_CLIENT_ID: ${{ secrets.SFDX_CLIENT_ID }}
         run: |
           echo "${SFDX_JWT_KEY}" > server.key
-          npx sfdx force:auth:jwt:grant --clientid "${SFDX_CLIENT_ID}" --jwtkeyfile server.key --username gfarb@github.dreamforce --setdefaultdevhubusername
-          npx sfdx force:org:display --json -u gfarb@github.dreamforce > sfdx-auth.json
+          npx sfdx force:auth:jwt:grant --clientid "${SFDX_CLIENT_ID}" --jwtkeyfile server.key --username nitin.rajput@fexle.com.training.staging --setdefaultdevhubusername
+          npx sfdx force:org:display --json -u nitin.rajput@fexle.com.training.staging > sfdx-auth.json
           rm server.key
 
       - name: Build, Test & Deploy
         uses: gfarb/sfdx-deploy@v1
         env:
-          TARGET_USERNAME: gfarb@github.dreamforce
+          TARGET_USERNAME: nitin.rajput@fexle.com.training.staging
           SOURCE_PATH: force-app
           DESTRUCTIVE_CHANGES: destructive-changes
           TEST_LEVEL: RunLocalTests
