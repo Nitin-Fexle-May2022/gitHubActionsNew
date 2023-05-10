@@ -24,9 +24,10 @@ jobs:
         env:
           SFDX_USERNAME: ${{ secrets.SFDX_USERNAME }}
           SFDX_PASSWORD: ${{ secrets.SFDX_PASSWORD }}
+   
         run: |
-          npx sfdx force:auth:password:generate -u $SFDX_USERNAME -p $SFDX_PASSWORD -a DevHub
-          npx sfdx force:org:display --json -u DevHub > sfdx-auth.json
+            sfdx auth:login --username ${{ secrets.SFDX_USERNAME }} --password ${{ secrets.SFDX_PASSWORD }} --setalias DevHub
+            sfdx force:org:display --json -u DevHub > sfdx-auth.json
 
       - name: Build, Test & Deploy
         uses: gfarb/sfdx-deploy@v1
