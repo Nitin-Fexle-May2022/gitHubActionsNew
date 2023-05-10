@@ -27,7 +27,8 @@ jobs:
         
         
         run: |
-          echo "${SFDX_JWT_KEY}" | openssl rsa -inform pem -outform pem -out server.key
+          echo -n "${SFDX_JWT_KEY}" > server.key
+
           
           npx sfdx force:auth:jwt:grant -i "${SFDX_CLIENT_ID}" -f server.key -o nitin.rajput@fexle.com.training.staging
           npx sfdx force:org:display --json -u nitin.rajput@fexle.com.training.staging > sfdx-auth.json
