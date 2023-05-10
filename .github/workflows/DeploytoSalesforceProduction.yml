@@ -26,7 +26,7 @@ jobs:
           SFDX_CLIENT_ID: ${{ secrets.SFDX_CLIENT_ID }}
         run: |
           echo "${SFDX_JWT_KEY}" > server.key
-          npx sfdx force:auth:jwt:grant -i "${SFDX_CLIENT_ID}" -f "${SFDX_JWT_KEY}" --username nitin.rajput@fexle.com.training.staging -r https://login.salesforce.com
+          npx sfdx force:auth:jwt:grant -i "${SFDX_CLIENT_ID}" -f server.key --username nitin.rajput@fexle.com.training.staging -r https://login.salesforce.com
           npx sfdx force:org:display --json -u nitin.rajput@fexle.com.training.staging > sfdx-auth.json
           rm server.key
           
