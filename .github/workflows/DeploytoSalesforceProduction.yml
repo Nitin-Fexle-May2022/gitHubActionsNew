@@ -21,7 +21,7 @@ jobs:
           SFDX_CLIENT_ID: ${{ secrets.SFDX_CLIENT_ID }}
         run: |
           echo "${SFDX_JWT_KEY}" > server.key
-          npx sfdx force:auth:jwt:grant --clientid "${SFDX_CLIENT_ID}" --jwtkeyfile SFDX_CLIENT_ID --username nitin.rajput@fexle.com.training.staging --setdefaultdevhubusername
+          npx sfdx force:auth:jwt:grant --clientid "${SFDX_CLIENT_ID}" --jwtkeyfile SFDX_JWT_KEY --username nitin.rajput@fexle.com.training.staging --setdefaultdevhubusername
           npx sfdx force:org:display --json -u nitin.rajput@fexle.com.training.staging > sfdx-auth.json
           rm SFDX_CLIENT_ID
           
