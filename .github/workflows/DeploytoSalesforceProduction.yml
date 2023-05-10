@@ -24,9 +24,8 @@ jobs:
         env:
           SFDX_JWT_KEY: ${{ secrets.SFDX_JWT_KEY }}
           SFDX_CLIENT_ID: ${{ secrets.SFDX_CLIENT_ID }}
+          
         run: |
-          #echo "${SFDX_JWT_KEY//\\n/}" > server.key
-          #openssl rsa -in <(echo "${SFDX_JWT_KEY//\\n/}") > server.key
           echo "${SFDX_JWT_KEY}" | openssl rsa -inform pem -outform pem -out server.key
           
           npx sfdx force:auth:jwt:grant -i "${SFDX_CLIENT_ID}" -f server.key -o nitin.rajput@fexle.com.training.staging
