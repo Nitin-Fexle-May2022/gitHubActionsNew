@@ -3,7 +3,7 @@ on:
   pull_request:
     types: [opened]
     branches:
-      - "actions"
+      - main
 jobs:
   deploy:
     runs-on: ubuntu-latest
