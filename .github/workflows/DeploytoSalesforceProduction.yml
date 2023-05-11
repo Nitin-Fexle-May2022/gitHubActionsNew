@@ -27,14 +27,12 @@ jobs:
       - name: 'Populate auth file with DEVHUB_SFDX_URL and DEVHUB_SFDX_AUTH_URL secrets'
         shell: bash
         run: |
-          echo ${{ secrets.DEVHUB_SFDX_URL}} > ./DEVHUB_SFDX_URL.txt
-          echo ${{ secrets.DEVHUB_SFDX_AUTH_URL }} > ./DEVHUB_SFDX_AUTH_URL.txt
-          secretFileSize=$(wc -c "./DEVHUB_SFDX_URL.txt" | awk '{print $1}')
-          secretFileSizeAuth=$(wc -c "./DEVHUB_SFDX_AUTH_URL.txt" | awk '{print $1}')
-          if [ $secretFileSize == 1 ] || [ $secretFileSizeAuth == 1 ]; then
-            echo "Missing DEVHUB_SFDX_URL or DEVHUB_SFDX_AUTH_URL secret. Is this workflow running on a fork?";
-            exit 1;
-          fi
+            echo ${{ secrets.DEVHUB_SFDX_URL}} > ./DEVHUB_SFDX_URL.txt
+            secretFileSize=$(wc -c "./DEVHUB_SFDX_URL.txt" | awk '{print $1}')
+            if [ $secretFileSize == 1 ]; then
+                echo "Missing DEVHUB_SFDX_URL secret. Is this workflow running on a fork?";
+                exit 1;
+            fi
 
       - name: Authenticate Dev Hub
         run: |
