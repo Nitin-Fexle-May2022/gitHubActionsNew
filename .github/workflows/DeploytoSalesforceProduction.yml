@@ -23,7 +23,7 @@ jobs:
       - name: 'Populate auth file with DEVHUB_SFDX_URL secret'
         shell: bash
         run: |
-            echo ${force://PlatformCLI::5Aep861ckn.CqYCOXxtoNzNbkJ5iqiJdOFC.eWE0guCBYYHEcoMBg2XAcA9tHRgcZ1sxuPH0bVFn7wZdlECAgQh@fexleservices--dodev.sandbox.my.salesforce.com} > ./DEVHUB_SFDX_URL.txt
+            echo ${{ secrets.DEVHUB_SFDX_URL}} > ./DEVHUB_SFDX_URL.txt
             secretFileSize=$(wc -c "./DEVHUB_SFDX_URL.txt" | awk '{print $1}')
             if [ $secretFileSize == 1 ]; then
                 echo "Missing DEVHUB_SFDX_URL secret. Is this workflow running on a fork?";
