@@ -1,8 +1,5 @@
 name: Deploy to Salesforce Production
 on:
-  push:
-    branches:
-      - "actions"
   pull_request:
     types: [opened]
     branches:
