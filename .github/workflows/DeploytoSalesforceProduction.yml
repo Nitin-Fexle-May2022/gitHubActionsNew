@@ -1,17 +1,18 @@
 name: Deploy to Salesforce Production
 on:
+  push:
+    branches:
+      - "actions"
   pull_request:
-    types: [created]
-    branches : actions
-
+    types: [opened]
+    branches:
+      - "actions"
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          ref: ${{ github.head_ref }}
 
       - name: Setup Node
         uses: actions/setup-node@v2
@@ -21,27 +22,32 @@ jobs:
       - name: Install Dependencies
         run: |
           npm install -g sfdx-cli
-
-      - name: 'Populate auth file with DEVHUB_SFDX_URL secret'
+          #npm install gfarb/sfdx-deploy@v1
+          
+      - name: 'Populate auth file with DEVHUB_SFDX_URL and DEVHUB_SFDX_AUTH_URL secrets'
         shell: bash
         run: |
-            echo ${{ secrets.DEVHUB_SFDX_URL}} > ./DEVHUB_SFDX_URL.txt
-            secretFileSize=$(wc -c "./DEVHUB_SFDX_URL.txt" | awk '{print $1}')
-            if [ $secretFileSize == 1 ]; then
-                echo "Missing DEVHUB_SFDX_URL secret. Is this workflow running on a fork?";
-                exit 1;
-            fi
+          echo ${{ secrets.DEVHUB_SFDX_URL}} > ./DEVHUB_SFDX_URL.txt
+          echo ${{ secrets.DEVHUB_SFDX_AUTH_URL }} > ./DEVHUB_SFDX_AUTH_URL.txt
+          secretFileSize=$(wc -c "./DEVHUB_SFDX_URL.txt" | awk '{print $1}')
+          secretFileSizeAuth=$(wc -c "./DEVHUB_SFDX_AUTH_URL.txt" | awk '{print $1}')
+          if [ $secretFileSize == 1 ] || [ $secretFileSizeAuth == 1 ]; then
+            echo "Missing DEVHUB_SFDX_URL or DEVHUB_SFDX_AUTH_URL secret. Is this workflow running on a fork?";
+            exit 1;
+          fi
 
       - name: Authenticate Dev Hub
-        run: sfdx auth:sfdxurl:store -f ./DEVHUB_SFDX_URL.txt -a devhub -d
+        run: |
+          sfdx force:auth:sfdxurl:store -f ./DEVHUB_SFDX_URL.txt -d -a devhub
 
       - name: Build, Test & Deploy
+        if: github.event_name == 'pull_request' && github.event.action == 'opened' && github.base_ref == 'main'
         uses: gfarb/sfdx-deploy@v1
         env:
           TARGET_USERNAME: devhub
           SOURCE_PATH: force-app
           DESTRUCTIVE_CHANGES: destructive-changes
           TEST_LEVEL: RunLocalTests
-          FLAGS: --checkonly
           WAIT: 200
-         
+          FLAGS: --checkonly
+          BASE_BRANCH: ${{ github.base_ref }}
