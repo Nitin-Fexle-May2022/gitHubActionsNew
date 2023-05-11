@@ -19,7 +19,6 @@ jobs:
       - name: Install Dependencies
         run: |
           npm install -g sfdx-cli
-          npm install gfarb/sfdx-deploy@v1
           npm install sfdx-actions/setup-sfdx@v1     
           
       - uses: sfdx-actions/setup-sfdx@v1
