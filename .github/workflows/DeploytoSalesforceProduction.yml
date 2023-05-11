@@ -1,14 +1,17 @@
-on:
-  push:
-    branches:
-      - "actions"
 name: Deploy to Salesforce Production
+on:
+  pull_request:
+    types: [created]
+    branches : actions
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Setup Node
         uses: actions/setup-node@v2
@@ -18,8 +21,7 @@ jobs:
       - name: Install Dependencies
         run: |
           npm install -g sfdx-cli
-          #npm install gfarb/sfdx-deploy@v1
-          
+
       - name: 'Populate auth file with DEVHUB_SFDX_URL secret'
         shell: bash
         run: |
@@ -40,5 +42,6 @@ jobs:
           SOURCE_PATH: force-app
           DESTRUCTIVE_CHANGES: destructive-changes
           TEST_LEVEL: RunLocalTests
-          WAIT: 200
           FLAGS: --checkonly
+          WAIT: 200
+         
