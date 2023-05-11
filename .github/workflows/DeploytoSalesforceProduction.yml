@@ -18,8 +18,13 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          npm install -g sfdx-cli
-          npm install sfdx-actions/setup-sfdx@latest     
+          npm install -g sfdx-cli  
+          npm install salesforce/plugin-login@1.2.8
+      
+      - name: Auth
+        run:
+          npm install -g sfdx-cli  
+          npm install salesforce/plugin-login
           
       - uses: sfdx-actions/setup-sfdx@v1
         with:
