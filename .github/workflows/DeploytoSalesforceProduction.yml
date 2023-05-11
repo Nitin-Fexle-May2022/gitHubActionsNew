@@ -2,41 +2,41 @@ on:
   push:
     branches:
       - "actions"
-name: DeploytoSalesforceProduction
+name: Deploy to Salesforce Production
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v2
         with:
           node-version: "16.x"
 
       - name: Install Dependencies
         run: |
           npm install -g sfdx-cli
-          npm install -g sfdx-cli sfpowerkit
           #npm install gfarb/sfdx-deploy@v1
-
-      - name: SFDX Auth
-        env:
-          SFDX_USERNAME: ${{ secrets.SFDX_USERNAME }}
-          SFDX_PASSWORD: ${{ secrets.SFDX_PASSWORD }}
-   
+          
+      - name: 'Populate auth file with DEVHUB_SFDX_URL secret'
+        shell: bash
         run: |
-            sfpowerkit:auth:login -u sendgrid@fexle.com.dev -p 786786@ab  [-s Esc2hKTZbirGeN3glvIRs3Jpw] [ -r login.salesforce.com ]  [-a DevHub]
-            #sfdx sfpowerkit:auth:login --instanceurl https://login.salesforce.com --username SFDX_USERNAME --password SFDX_PASSWORD --setalias $ALIAS
-            #sfdx auth:sfdxurl:store -f  -a HubOrg
-            #sfdx force:auth:login --username ${{ secrets.SFDX_USERNAME }} --password ${{ secrets.SFDX_PASSWORD }} --setalias DevHub
-            sfdx force:org:display --json -u DevHub > sfdx-auth.json
+            echo ${force://PlatformCLI::5Aep861ckn.CqYCOXxtoNzNbkJ5iqiJdOFC.eWE0guCBYYHEcoMBg2XAcA9tHRgcZ1sxuPH0bVFn7wZdlECAgQh@fexleservices--dodev.sandbox.my.salesforce.com} > ./DEVHUB_SFDX_URL.txt
+            secretFileSize=$(wc -c "./DEVHUB_SFDX_URL.txt" | awk '{print $1}')
+            if [ $secretFileSize == 1 ]; then
+                echo "Missing DEVHUB_SFDX_URL secret. Is this workflow running on a fork?";
+                exit 1;
+            fi
+
+      - name: Authenticate Dev Hub
+        run: sfdx auth:sfdxurl:store -f ./DEVHUB_SFDX_URL.txt -a devhub -d
 
       - name: Build, Test & Deploy
         uses: gfarb/sfdx-deploy@v1
         env:
-          TARGET_USERNAME: DevHub
+          TARGET_USERNAME: devhub
           SOURCE_PATH: force-app
           DESTRUCTIVE_CHANGES: destructive-changes
           TEST_LEVEL: RunLocalTests
