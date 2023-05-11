@@ -19,11 +19,10 @@ jobs:
       - name: Install Dependencies
         run: |
           npm install -g sfdx-cli
-          npm install sfdx-actions/setup-sfdx@v1     
+          npm install sfdx-actions/setup-sfdx@latest     
           
       - uses: sfdx-actions/setup-sfdx@v1
         with:
           sfdx-auth-url: ${{ secrets.DEVHUB_SFDX_URL }}
       - name: sfdx-test-run
         run: sfdx force:apex:test:run -l RunLocalTests -w 30
-
